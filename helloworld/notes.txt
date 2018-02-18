@@ -1,0 +1,9 @@
+
+gen wasm +js
+emcc -s WASM=1 -s ONLY_MY_CODE=1  -o hello1.js hello1.c
+
+gen html+js+wasm:
+emcc -s WASM=1 -s ONLY_MY_CODE=1  -o hello1.html hello1.c 
+
+server:
+python -m SimpleHTTPserver

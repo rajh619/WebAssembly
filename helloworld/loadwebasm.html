@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src="hello1.js"></script> -->
+</head>
+
+<body>
+    <script>
+
+
+        /*
+                //using xmlHTTPRequests
+                request = new XMLHttpRequest();
+                request.open('GET', 'hello.wasm');
+                request.responseType = 'arraybuffer';
+                // request.send();
+        
+                request.onload = function () {
+                    var bytes = request.response;
+                    WebAssembly.instantiate(bytes, importObject).then(
+                        //function (obj) {
+                        //     //obj.instance.exports.exported_func();
+                        // }
+                        console.log("loadedsucess"));
+                };
+                
+        */
+
+
+    
+//  derived from https://github.com/mdn/webassembly-examples/blob/master/wasm-utils.js
+        function fetchAndInstantiate(url, importObject) {
+            return fetch(url).then(response =>
+                response.arrayBuffer()
+            ).then(bytes =>
+                WebAssembly.instantiate(bytes, importObject)
+            ).then(results =>
+                results.instance
+            );
+        }
+
+        const memory = new WebAssembly.Memory({ initial: 256, maximum: 256 });
+        const importObj = {
+            env: {
+                abortStackOverflow: () => { throw new Error('overflow'); },
+                table: new WebAssembly.Table({ initial: 0, maximum: 0, element: 'anyfunc' }),
+                tableBase: 0,
+                memory: memory,
+                memoryBase: 1024,
+                STACKTOP: 0,
+                STACK_MAX: memory.buffer.byteLength,
+            }
+        };
+
+        /*
+                fetch('hello2.wasm').then((response) => response.arrayBuffer())
+                    .then((bytes) => WebAssembly.instantiate(bytes, importObj))
+                    .then(
+                        (wa) => console.log(wa.instance.exports._main())
+                    );
+        
+        */
+
+        fetchAndInstantiate('hello1.wasm', importObj)
+            .then((instance) => {
+                let _tmp =instance.exports._main();
+                alert("value is :: " +_tmp );
+            }
+            );
+
+    </script>
+</body>
+
+</html>
